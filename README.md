@@ -71,9 +71,67 @@ Update policies and tools to prevent recurrence.
 ## Closure
 
 Review and confirm incident resolution.
-  Review/observe your notes for the incident.
+  Review/observe notes for the incident.
+  
+## Incident Response Notes
+
+Analysis
+
+The incident was triggered by brute-force logon attempts originating from three distinct IP addresses, targeting four different hosts:
+
+### 1.
+164.92.128.27
+
+Target: vm-lab-am.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+
+Result: 127 failed logon attempts
+
+### 2.
+92.63.197.9
+
+Target: threat-hunt-lab
+
+Result: 79 failed logon attempts
+
+### 3.
+
+161.35.85.83
+
+Target:: linux-target-1.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+
+Result: 71 Logon Failures
+
+### 4.
+
+92.63.197.9
+
+Target: edr
+
+Result: 66 LogonFailed
+
+## Code
+
+A query was executed to check whether any of these IP addresses achieved successful logons:
+
+  ```kql
+DeviceLogonEvents
+| where RemoteIP in ("164.92.128.27", "92.63.197.9", "161.35.85.83")
+| where ActionType != "LogonFailed"
+
+```
+Result: No successful logons were identified from these IPs.
+
+## Containment
+
+  Isolated all four impacted devices in Microsoft Defender for Endpoint (MDE).
+  Executed anti-malware scans on each device via MDE.
+  Applied Network Security Group (NSG) restrictions to block RDP attempts from the public internet, allowing only trusted IP access.
+  Proposed a policy update to enforce restricted RDP access (e.g., bastion host or approved IPs) for all VMs moving forward.
+
+
 Finalize reporting and close the case.
-  Close out the Incident within Sentinel as a “True Positive”
+
+  Closed out the Incident within Sentinel as a “True Positive”
 
 <img width="447" height="662" alt="image" src="https://github.com/user-attachments/assets/91ca5d80-222c-4f0e-bafd-a4bc2c66d139" />
 
